@@ -2,12 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\HistoryChat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
 class ChatController extends Controller
 {
-    function handleChat(Request $request)
+    function index()
+    {
+        $historyChat = HistoryChat::get();
+        return view('chat', compact('historyChat'));
+    }
+
+    function store(Request $request)
     {
         $input = $request['chat'];
         $url = env('GEMINI_API_BASE_URL') . env('GEMINI_API_KEY');
@@ -31,6 +38,13 @@ class ChatController extends Controller
 
         $chatbotResponse = $response->json()['candidates'][0]['content']['parts'][0]['text'] ?? 'No Response';
 
-        return redirect()->back()->with(['response' => $chatbotResponse, 'input' => $input]);
+        HistoryChat::insert([
+            "send_chat" => $input,
+            "get_chat" => $chatbotResponse,
+            "created_at" => now(),
+            "updated_at" => now(),
+        ]);
+
+        return redirect()->back();
     }
 }

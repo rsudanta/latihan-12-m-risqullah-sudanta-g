@@ -11,9 +11,10 @@ Route::get('/portofolio', function () {
 });
 
 
-Route::get('/chat', function () {
-    return view('chat');
-});
+Route::get('/chat',  [App\Http\Controllers\ChatController::class, 'index']);
+
+Route::resource('history-chat', App\Http\Controllers\ChatController::class);
+Route::resource('biodata', App\Http\Controllers\BiodataController::class);
 
 Route::post('/chat', [App\Http\Controllers\ChatController::class, 'handleChat'])->name('chat');
 
